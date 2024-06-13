@@ -1,0 +1,2 @@
+#!/bin/bah
+find -type d -exec chmod a+x {} +
