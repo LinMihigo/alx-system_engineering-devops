@@ -1,2 +1,2 @@
 #!/bin/bash
-find . ! -path './.' ! -path '../' -type d | wc -l
+find -mindepth 1 -type d ! -path './.' ! -path '../' | wc -l 
