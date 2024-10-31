@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# # A script an until loop printing the string - Best School
+count=1
+until [ $count -gt 10 ]; do
+    echo "Best School"
+    ((count++))
+done
