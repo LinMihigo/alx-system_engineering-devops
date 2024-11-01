@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Bash scripting that displays "To infinity and beyond" indefinitely
+i=0
+while ((i >= 0))
+do
+    echo "To infinity and beyond"
+    if ((i % 2))
+    then
+        sleep 2
+    fi
+    ((i++))
+done
