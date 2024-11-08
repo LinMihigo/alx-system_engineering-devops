@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 # Displays all active IPv4 IPs on the machine
 
-ifconfig | grep -oP 'inet\s+\K\d+(\.\d+){3}'
+ifconfig | grep -oP 'inet\s+\K\d+(\.\d+){3}' | cut -b 11-
