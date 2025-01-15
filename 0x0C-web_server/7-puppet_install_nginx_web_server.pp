@@ -10,6 +10,12 @@ package { 'nginx':
   require => Exec['update_apt_cache'],
 }
 
+exec { 'allow_nginx':
+  command => 'ufw allow "Nginx HTTP"',
+  path    => '/usr/sbin',
+  require => Package['nginx'],
+}
+
 file { '/var/www/html/index.html':
   ensure  => file,
   content => 'Hello World!',
@@ -43,5 +49,5 @@ EOF
 service { 'nginx':
   ensure  => running,
   enable  => true,
-  require => File['/etc/nginx/sites-available/default'],
+  require => [File['/etc/nginx/sites-available/default'], Exec['allow_nginx']],
 }
