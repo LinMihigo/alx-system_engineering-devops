@@ -10,7 +10,7 @@ package { 'nginx':
   require => Exec['update_apt_cache'],
 }
 
-file { '/var/www/html/index.nginx-debian.html':
+file { '/var/www/html/index.html':
   ensure  => file,
   content => 'Hello World!',
   require => Package['nginx'],
@@ -23,7 +23,7 @@ server {
     listen 80 default_server;
     listen [::]:80 default_server;
     root /var/www/html;
-    index index.html index.htm index.nginx-debian.html;
+    index index.html;
     server_name _;
 
     location /redirect_me {
