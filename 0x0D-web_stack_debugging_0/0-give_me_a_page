@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 # run apache on designated container
-sudo service apache2 start
 echo "Hello ALX" > /var/www/html/index.html
+sudo service apache2 start
