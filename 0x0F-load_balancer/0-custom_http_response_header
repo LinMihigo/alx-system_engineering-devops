@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# Configures a brand new ubuntu server and adds a customer header as well
+sudo apt-get -y update
+sudo apt-get install -y nginx
+
+echo "Hello World!" > /var/www/html/index.html
+echo "Ceci n'est pas une page" > /var/www/html/404.html
+
+SERVER_CONFIG=\
+"server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    root /var/www/html;
+    index index.html index.htm index.nginx-debian.html;
+    index index.html;
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+    if (\$request_filename ~ redirect_me){
+        rewrite ^ https://linmihigo.github.io permanent;
+    }
+    error_page 404 /404.html;
+    location = /404.html{
+        internal;
+    }
+}"
+
+bash -c "echo -e '$SERVER_CONFIG' > /etc/nginx/sites-enabled/default"
+
+GLOBAL_SERVER_CONFIG=\
+"user ubuntu;
+worker_processes auto;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    add_header X-Served-By $HOSTNAME always;
+    include /etc/nginx/sites-enabled/*;
+}"
+
+bash -c "echo -e '$GLOBAL_SERVER_CONFIG' > /etc/nginx/nginx.conf"
+
+service nginx start
+
+nginx -s reload
