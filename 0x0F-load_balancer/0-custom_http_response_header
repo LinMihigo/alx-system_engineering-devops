@@ -43,5 +43,3 @@ http {
 bash -c "echo -e '$GLOBAL_SERVER_CONFIG' > /etc/nginx/nginx.conf"
 
 service nginx start
-
-nginx -s reload
