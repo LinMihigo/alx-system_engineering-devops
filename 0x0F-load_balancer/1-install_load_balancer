@@ -17,5 +17,4 @@ backend lb_back_end
 EOL
 
 sudo update-rc.d haproxy defaults
-
 service haproxy start
