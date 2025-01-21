@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Debug an ubuntu container's nginx installation
+rm /etc/nginx/sites-enabled/default
+ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+service nginx restart
