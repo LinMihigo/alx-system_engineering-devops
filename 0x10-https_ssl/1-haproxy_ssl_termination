@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# Usage: sudo ./script.sh <domain> <web01_ip> <web02_ip>
+
+DOMAIN="$1"
+WEB01_IP="$2"
+WEB02_IP="$3"
+
+# Install HAproxy 1.5+ and certbot
+apt-get update
+apt-get install haproxy certbot -y
+
+# Generate SSL cert (stop HAproxy to free ports 80/443)
+systemctl stop haproxy
+certbot certonly --standalone -d "$DOMAIN" --non-interactive --agree-tos -m admin@$DOMAIN
+
+# Prepare HAproxy certs
+mkdir -p /etc/haproxy/certs
+cat /etc/letsencrypt/live/$DOMAIN/{fullchain.pem,privkey.pem} > /etc/haproxy/certs/$DOMAIN.pem
+
+# Create HAproxy config
+cat > 1-haproxy_ssl_termination <<EOF
+global
+    maxconn 4096
+    ssl-default-bind-options no-sslv3
+    ssl-default-bind-ciphers EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
+
+defaults
+    mode http
+    timeout connect 10s
+    timeout client 30s
+    timeout server 30s
+
+frontend https_in
+    bind *:443 ssl crt /etc/haproxy/certs/$DOMAIN.pem
+    http-request set-header X-Forwarded-Proto https
+    default_backend webservers
+
+backend webservers
+    balance roundrobin
+    server web-01 $WEB01_IP:80 check
+    server web-02 $WEB02_IP:80 check
+EOF
+
+# Deploy config and restart
+cp 1-haproxy_ssl_termination /etc/haproxy/haproxy.cfg
+systemctl restart haproxy
+
+# Verify
+echo "Verification:"
+curl -s https://$DOMAIN | grep -i "ALX" || echo "ALX content not found!"
+ss -lntp | grep ':443'
