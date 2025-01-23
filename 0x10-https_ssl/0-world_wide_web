@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+# Displays information about subdomains
 process_sub() {
     local domain="$1"
     local sub="$2"
