@@ -1,17 +1,27 @@
 #!/usr/bin/env bash
 # Displays information about subdomains
-domain_information () {
-    line=$(dig "$2"."$1" | grep -A1 'ANSWER SECTION:' | tr '\t' '\n' | tail -2 | tr '\n' ' ')
-    echo "$2 $line" | awk '{print "The subdomain " $1 " is a " $2 " record and points to " $3}'
+process_sub() {
+    local domain="$1"
+    local sub="$2"
+    local fqdn="${sub}.${domain}"
+    
+    # Use Google's DNS (8.8.8.8) to bypass local resolver restrictions
+    dig +nocmd +noall +answer "@8.8.8.8" "$fqdn" ANY | awk '
+    NR==1 {
+        # Handle different record types (A/CNAME/MX etc)
+        type = $4
+        dest = ($4 == "A") ? $5 : $NF  # $NF = last field for non-A records
+        print "The subdomain", "'"$sub"'", "is a", type, "record and points to", dest
+    }'
 }
 
-if [ "$#" == 1 ]
-then
-  domain_information "$1" "www"
-  domain_information "$1" "lb-01"
-  domain_information "$1" "web-01"
-  domain_information "$1" "web-02"
-elif [ "$#" == 2 ]
-then
-  domain_information "$1" "$2"
+domain="$1"
+subdomain="$2"
+
+if [[ $# -eq 1 ]]; then
+    for sub in www lb-01 web-01 web-02; do
+        process_sub "$domain" "$sub"
+    done
+elif [[ $# -eq 2 ]]; then
+    process_sub "$domain" "$subdomain"
 fi
