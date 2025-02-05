@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Script generates a MySQL dump and creates a compressed archive out of it
+
+# Check if the password argument is provided
+if [ -z "$1" ]; then
+    echo "Usage: $0 <mysql_password>"
+    exit 1
+fi
+
+# Assign the provided password to a variable
+MYSQL_PASSWORD=$1
+
+# Get the current date in day-month-year format
+CURRENT_DATE=$(date +"%d-%m-%Y")
+
+# Define the backup file name
+BACKUP_FILE="backup.sql"
+
+# Define the archive file name
+ARCHIVE_FILE="${CURRENT_DATE}.tar.gz"
+
+# Create a MySQL dump of all databases and compress it into a tar.gz archive
+mysqldump -u root -p"$MYSQL_PASSWORD" --all-databases > "$BACKUP_FILE" && \
+tar -czf "$ARCHIVE_FILE" "$BACKUP_FILE"
