@@ -21,4 +21,4 @@ ARCHIVE_FILE="${CURRENT_DATE}.tar.gz"
 
 # Create a MySQL dump of all databases and compress it into a tar.gz archive
 mysqldump -u root -p"$MYSQL_PASSWORD" --all-databases > "$BACKUP_FILE" && \
-tar -czf "$ARCHIVE_FILE" "$BACKUP_FILE"
+tar -czvf "$ARCHIVE_FILE" "$BACKUP_FILE"
