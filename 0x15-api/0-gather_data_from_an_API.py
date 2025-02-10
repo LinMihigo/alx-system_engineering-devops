@@ -25,7 +25,7 @@ if __name__ == "__main__":
                          params={"userId": sys.argv[1]}).json()
 
     completed = [t["title"] for t in todos if t["completed"]]
-    print(f"Employee {user['name']} is done with tasks\
-          ({len(completed)}/{len(todos)}):")
+    print(f"Employee {user['name']} is done with "
+            f"tasks {len(completed)}/{len(todos)}):")
     for c in completed:
         print(f"\t {c}")
