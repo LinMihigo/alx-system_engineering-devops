@@ -6,23 +6,16 @@ import json
 import requests
 import sys
 
-
 if __name__ == "__main__":
-    """
-    Records all tasks that are owned by an employee and save em in a json
-    file
-    """
-    employee_id = int(sys.argv[1])
-    base_url = "https://jsonplaceholder.typicode.com/"
-    user = requests.get(f"{base_url}users/{employee_id}").json()
-    todos = requests.get(f"{base_url}todos",
-                         params={"userId": employee_id}).json()
+    user_id = sys.argv[1]
+    url = "https://jsonplaceholder.typicode.com/"
+    user = requests.get(url + "users/{}".format(user_id)).json()
+    username = user.get("username")
+    todos = requests.get(url + "todos", params={"userId": user_id}).json()
 
-    data = {str(employee_id): [{
-        "task": t["title"],
-        "completed": t["completed"],
-        "username": user["username"]
-        } for t in todos]}
-
-    with open(f"{employee_id}.json", "w") as f:
-        json.dump(data, f)
+    with open("{}.json".format(user_id), "w") as jsonfile:
+        json.dump({user_id: [{
+                "task": t.get("title"),
+                "completed": t.get("completed"),
+                "username": username
+            } for t in todos]}, jsonfile)
