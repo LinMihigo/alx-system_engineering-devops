@@ -5,24 +5,16 @@ Extends a script to export data to csv format
 import json
 import requests
 
-
 if __name__ == "__main__":
-    """
-    Records all tasks that are owned by an employee and save em in a json
-    file
-    """
-    base_url = "https://jsonplaceholder.typicode.com/"
-    users = requests.get(f"{base_url}users/").json()
-    todos = requests.get(f"{base_url}todos/").json()
+    url = "https://jsonplaceholder.typicode.com/"
+    users = requests.get(url + "users").json()
 
-    all_data = {}
-
-    for user in users:
-        all_data[user["id"]] = [{
-            "username": user["username"],
-            "task": t["title"],
-            "completed": t["completed"]
-        } for t in todos]
-
-    with open("todo_all_employees.json", "w") as f:
-        json.dump(all_data, f)
+    with open("todo_all_employees.json", "w") as jsonfile:
+        json.dump({
+            u.get("id"): [{
+                "task": t.get("title"),
+                "completed": t.get("completed"),
+                "username": u.get("username")
+            } for t in requests.get(url + "todos",
+                                    params={"userId": u.get("id")}).json()]
+            for u in users}, jsonfile)
