@@ -13,11 +13,14 @@ if __name__ == "__main__":
     """
     base_url = "https://jsonplaceholder.typicode.com/"
     users = requests.get(f"{base_url}users/").json()
-    todos = requests.get(f"{base_url}todos/").json()
-
     all_data = {}
 
     for user in users:
+        todos = requests.get(
+            f"{base_url}todos",
+            params={"userId": user["id"]}
+            ).json()
+
         all_data[user["id"]] = [{
             "username": user["username"],
             "task": t["title"],
