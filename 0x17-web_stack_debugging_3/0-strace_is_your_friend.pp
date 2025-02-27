@@ -1,6 +1,7 @@
 # automated puppet fix (to find out why Apache is returning a 500 error)
 
 exec { 'fix-wordpress':
-  command => 'sed -i s/phpp/php/g /var/www/html/wp-settings.php',
-  path    => '/usr/local/bin/:/bin/'
+  command => 'chown -R www-data:www-data /var/www/html',
+  path    => ['/bin', '/usr/bin'],
+  unless  => 'stat -c %U:%G /var/www/html | grep -q www-data:www-data',
 }
