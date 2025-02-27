@@ -1,7 +1,15 @@
 # automated puppet fix (to find out why Apache is returning a 500 error)
 
-exec { 'fix-wordpress':
-  command => '/bin/chown -R www-data:www-data /var/www/html/wordpress && /bin/chmod -R 755 /var/www/html/wordpress',
-  path    => ['/bin', '/usr/bin'],
-  unless  => '/bin/test -d /var/www/html/wordpress',
+file { '/etc/apache2/missing.conf':
+  ensure  => file,
+  owner   => 'root',
+  group   => 'root',
+  mode    => '0644',
+  content => '# Automatically created by Puppet',
+}
+
+service { 'apache2':
+  ensure  => running,
+  enable  => true,
+  require => File['/etc/apache2/missing.conf'],
 }
